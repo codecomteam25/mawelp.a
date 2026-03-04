@@ -1,122 +1,36 @@
-# Mawel P.A — Land Sales Management System
-
-A professional web application for managing land sales in Ghana. Built with **React**, **NestJS**, **Convex**, and **Clerk**.
-
-## Tech Stack
-
-| Layer          | Technology                        |
-| -------------- | --------------------------------- |
-| Frontend       | React 19 + TypeScript + Vite      |
-| Styling        | Tailwind CSS v4 (Ghanaian palette)|
-| Backend        | NestJS                            |
-| Database       | Convex (real-time)                |
-| Authentication | Clerk                             |
-| Icons          | Lucide React                      |
-| Routing        | React Router v7                   |
-
-## Features
-
-- **Login / Signup** — Clerk-powered auth with Ghana-themed UI
-- **Agent Dashboard** — Stats, recent transactions, available listings
-- **Property Management** — CRUD for land listings with grid/list views, filters
-- **Buyer/Seller Profiles** — Role-based user management (admin, agent, buyer, seller)
-- **Part Payments Tracking** — Record and track installment payments (MoMo, bank, cash)
-- **Transaction Details** — Full transaction lifecycle with payment progress
-- **Document Management** — Upload/manage indentures, site plans, agreements
-- **Responsive Design** — Mobile-first, works on all screen sizes
-- **Real-time Updates** — Convex subscriptions for live data
-
-## Project Structure
-
-```
-Mawel P.A/
-├── frontend/               # React + Vite frontend
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   │   ├── layout/     # Sidebar, AppLayout
-│   │   │   └── ui/         # Button, Card, Modal, StatusBadge, etc.
-│   │   ├── pages/          # Route pages
-│   │   ├── data/           # Mock data for development
-│   │   ├── lib/            # Utility functions
-│   │   └── types/          # TypeScript interfaces
-│   ├── convex/             # Convex schema & server functions
-│   └── .env.example
-├── backend/                # NestJS backend
-│   └── src/
-│       ├── auth/           # Clerk auth guard, service, controller
-│       ├── app.module.ts
-│       └── main.ts
-└── README.md
-```
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- A [Clerk](https://clerk.com) account (for authentication)
-- A [Convex](https://convex.dev) account (for the database)
-
-### Frontend Setup
+First, run the development server:
 
 ```bash
-cd frontend
-npm install
-
-# Copy env and fill in your keys
-cp .env.example .env
-
-# Start dev server
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-The frontend runs on `http://localhost:5173` with mock data by default.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Convex Setup
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-cd frontend
-npx convex dev
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-This will prompt you to create a Convex project and generate the `convex/_generated` directory.
+## Learn More
 
-### Backend Setup
+To learn more about Next.js, take a look at the following resources:
 
-```bash
-cd backend
-npm install
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-# Copy env and fill in your keys
-cp .env.example .env
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-# Start dev server
-npm run start:dev
-```
+## Deploy on Vercel
 
-The backend runs on `http://localhost:3001`.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## Color Palette (Ghanaian Theme)
-
-| Color         | Hex       | Usage                    |
-| ------------- | --------- | ------------------------ |
-| Ghana Green   | `#006B3F` | Primary actions, success |
-| Ghana Gold    | `#FCD116` | Highlights, warnings     |
-| Ghana Red     | `#CE1126` | Errors, danger states    |
-| Ghana Black   | `#1A1A2E` | Sidebar, dark elements   |
-
-## Environment Variables
-
-### Frontend (`.env`)
-- `VITE_CLERK_PUBLISHABLE_KEY` — Clerk publishable key
-- `VITE_CONVEX_URL` — Convex deployment URL
-
-### Backend (`.env`)
-- `PORT` — Server port (default: 3001)
-- `CLERK_SECRET_KEY` — Clerk secret key
-- `CONVEX_URL` — Convex deployment URL
-
-## License
-
-Private — Mawel P.A © 2024
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

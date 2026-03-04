@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search, MapPin, Filter, Grid3X3, List, Loader2 } from "lucide-react";
+import { Plus, Search, MapPin, Filter, Grid3X3, List, Loader2, Upload, X } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
 import Button from "@/components/ui/Button";
 import StatusBadge from "@/components/ui/StatusBadge";
@@ -9,12 +9,14 @@ import Modal from "@/components/ui/Modal";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { Id } from "@convex/_generated/dataModel";
 import { useAuth } from "@/context/AuthContext";
 
 export default function PropertiesPage() {
   const { user } = useAuth();
   const properties = useQuery(api.properties.getAll);
   const createProperty = useMutation(api.properties.create);
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -25,8 +27,9 @@ export default function PropertiesPage() {
   const [form, setForm] = useState({
     title: "", location: "", region: "Greater Accra", plotNumber: "",
     landUse: "Residential", size: "", price: "", description: "",
-    imageUrls: "",
   });
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   if (!properties) {
     return (
@@ -352,16 +355,49 @@ export default function PropertiesPage() {
             </div>
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-ghana-gray-700 mb-1.5">
-                Image URLs (one per line)
+                Property Images
               </label>
-              <textarea
-                rows={3}
-                value={form.imageUrls}
-                onChange={(e) => setForm({ ...form, imageUrls: e.target.value })}
-                className="w-full px-3.5 py-2.5 border border-ghana-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghana-green/30 focus:border-ghana-green resize-none font-mono text-xs"
-                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
-              />
-              <p className="text-xs text-ghana-gray-500 mt-1">Enter image URLs, one per line. These will be displayed on the public listings page.</p>
+              <div className="border-2 border-dashed border-ghana-gray-300 rounded-lg p-6 text-center hover:border-ghana-green transition-colors">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    setSelectedImages(prev => [...prev, ...files]);
+                  }}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label htmlFor="image-upload" className="cursor-pointer">
+                  <Upload className="mx-auto mb-2 text-ghana-gray-400" size={32} />
+                  <p className="text-sm font-medium text-ghana-gray-700 mb-1">Click to upload images</p>
+                  <p className="text-xs text-ghana-gray-500">PNG, JPG, WEBP up to 10MB each</p>
+                </label>
+              </div>
+              {selectedImages.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {selectedImages.map((file, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-ghana-gray-50 px-3 py-2 rounded-lg">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                        <span className="text-sm text-ghana-gray-700 truncate">{file.name}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedImages(prev => prev.filter((_, i) => i !== idx))}
+                        className="text-ghana-red hover:text-ghana-red-dark p-1"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-ghana-gray-200">
@@ -378,11 +414,22 @@ export default function PropertiesPage() {
               onClick={async () => {
                 if (!form.title || !form.location || !form.price) return;
                 setSaving(true);
+                setUploadingImages(true);
                 try {
-                  const imageArray = form.imageUrls
-                    .split('\n')
-                    .map(url => url.trim())
-                    .filter(url => url.length > 0);
+                  // Upload images to Convex storage
+                  const imageUrls: string[] = [];
+                  for (const file of selectedImages) {
+                    const uploadUrl = await generateUploadUrl();
+                    const result = await fetch(uploadUrl, {
+                      method: "POST",
+                      headers: { "Content-Type": file.type },
+                      body: file,
+                    });
+                    const { storageId } = await result.json();
+                    // Construct the Convex storage URL
+                    const convexUrl = `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${storageId}`;
+                    imageUrls.push(convexUrl);
+                  }
                   
                   await createProperty({
                     title: form.title,
@@ -393,18 +440,20 @@ export default function PropertiesPage() {
                     size: form.size,
                     price: parseFloat(form.price),
                     description: form.description,
-                    images: imageArray,
+                    images: imageUrls,
                     agentId: user?._id || "",
                     agentName: user?.name || "Unknown",
                   });
-                  setForm({ title: "", location: "", region: "Greater Accra", plotNumber: "", landUse: "Residential", size: "", price: "", description: "", imageUrls: "" });
+                  setForm({ title: "", location: "", region: "Greater Accra", plotNumber: "", landUse: "Residential", size: "", price: "", description: "" });
+                  setSelectedImages([]);
                   setShowAddModal(false);
                 } finally {
                   setSaving(false);
+                  setUploadingImages(false);
                 }
               }}
             >
-              {saving ? "Saving..." : "Save Property"}
+              {uploadingImages ? "Uploading Images..." : saving ? "Saving..." : "Save Property"}
             </Button>
           </div>
         </form>

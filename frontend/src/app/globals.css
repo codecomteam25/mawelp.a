@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ghana-green: #006B3F;
+  --color-ghana-green-light: #00894F;
+  --color-ghana-green-dark: #004D2E;
+  --color-ghana-gold: #FCD116;
+  --color-ghana-gold-light: #FDDA44;
+  --color-ghana-gold-dark: #D4AD00;
+  --color-ghana-red: #CE1126;
+  --color-ghana-red-light: #E8334A;
+  --color-ghana-red-dark: #A60E1F;
+  --color-ghana-black: #1A1A2E;
+  --color-ghana-white: #FAFAF8;
+  --color-ghana-gray-50: #F7F7F5;
+  --color-ghana-gray-100: #EFEFEC;
+  --color-ghana-gray-200: #DDDDD8;
+  --color-ghana-gray-300: #BFBFB8;
+  --color-ghana-gray-400: #9A9A92;
+  --color-ghana-gray-500: #71716B;
+  --color-ghana-gray-600: #52524E;
+  --color-ghana-gray-700: #3A3A37;
+  --color-ghana-gray-800: #262624;
+  --color-ghana-gray-900: #1A1A18;
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-ghana-gray-50);
+  color: var(--color-ghana-gray-900);
+}
+
+* {
+  box-sizing: border-box;
+}

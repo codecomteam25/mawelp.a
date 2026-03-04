@@ -133,14 +133,25 @@ export default function ListingsPage() {
                 className="bg-white rounded-2xl border border-ghana-gray-200/80 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 group"
               >
                 <div className="h-52 bg-ghana-green/5 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  {property.images && property.images.length > 0 ? (
+                    <img 
+                      src={property.images[0]} 
+                      alt={property.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                      }}
+                    />
+                  ) : null}
+                  <div className={cn("absolute inset-0 flex items-center justify-center fallback-icon", property.images && property.images.length > 0 ? "hidden" : "")}>
                     <div className="text-center">
                       <Building2 size={36} className="text-ghana-green/15 mx-auto mb-2" />
                       <p className="text-xs text-ghana-gray-400">{property.region}</p>
                     </div>
                   </div>
                   <div className="absolute top-3 left-3">
-                    <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide", statusColors[property.status])}>
+                    <span className={cn("px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-sm", statusColors[property.status])}>
                       {property.status}
                     </span>
                   </div>

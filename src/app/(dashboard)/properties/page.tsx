@@ -25,6 +25,7 @@ export default function PropertiesPage() {
   const [form, setForm] = useState({
     title: "", location: "", region: "Greater Accra", plotNumber: "",
     landUse: "Residential", size: "", price: "", description: "",
+    imageUrls: "",
   });
 
   if (!properties) {
@@ -349,6 +350,19 @@ export default function PropertiesPage() {
                 placeholder="Describe the property..."
               />
             </div>
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-ghana-gray-700 mb-1.5">
+                Image URLs (one per line)
+              </label>
+              <textarea
+                rows={3}
+                value={form.imageUrls}
+                onChange={(e) => setForm({ ...form, imageUrls: e.target.value })}
+                className="w-full px-3.5 py-2.5 border border-ghana-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ghana-green/30 focus:border-ghana-green resize-none font-mono text-xs"
+                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+              />
+              <p className="text-xs text-ghana-gray-500 mt-1">Enter image URLs, one per line. These will be displayed on the public listings page.</p>
+            </div>
           </div>
           <div className="flex justify-end gap-3 pt-4 border-t border-ghana-gray-200">
             <Button
@@ -365,6 +379,11 @@ export default function PropertiesPage() {
                 if (!form.title || !form.location || !form.price) return;
                 setSaving(true);
                 try {
+                  const imageArray = form.imageUrls
+                    .split('\n')
+                    .map(url => url.trim())
+                    .filter(url => url.length > 0);
+                  
                   await createProperty({
                     title: form.title,
                     location: form.location,
@@ -374,10 +393,11 @@ export default function PropertiesPage() {
                     size: form.size,
                     price: parseFloat(form.price),
                     description: form.description,
+                    images: imageArray,
                     agentId: user?._id || "",
                     agentName: user?.name || "Unknown",
                   });
-                  setForm({ title: "", location: "", region: "Greater Accra", plotNumber: "", landUse: "Residential", size: "", price: "", description: "" });
+                  setForm({ title: "", location: "", region: "Greater Accra", plotNumber: "", landUse: "Residential", size: "", price: "", description: "", imageUrls: "" });
                   setShowAddModal(false);
                 } finally {
                   setSaving(false);

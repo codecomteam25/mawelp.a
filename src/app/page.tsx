@@ -277,19 +277,30 @@ export default function HomePage() {
               {available.map((property) => (
                 <div key={property._id} className="bg-white rounded-2xl border border-ghana-gray-200/80 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 group">
                   <div className="h-52 bg-ghana-green/5 relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    {property.images && property.images.length > 0 ? (
+                      <img 
+                        src={property.images[0]} 
+                        alt={property.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div className={cn("absolute inset-0 flex items-center justify-center fallback-icon", property.images && property.images.length > 0 ? "hidden" : "")}>
                       <div className="text-center">
                         <MapPin size={36} className="text-ghana-green/20 mx-auto mb-2" />
                         <p className="text-xs text-ghana-gray-400">{property.region}</p>
                       </div>
                     </div>
                     <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-ghana-green text-white uppercase tracking-wide">
+                      <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-ghana-green text-white uppercase tracking-wide shadow-sm">
                         Available
                       </span>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-ghana-gray-700 border border-ghana-gray-200">
+                      <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-ghana-gray-700 border border-ghana-gray-200 shadow-sm">
                         {property.landUse}
                       </span>
                     </div>
